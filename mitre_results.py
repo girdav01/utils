@@ -13,6 +13,7 @@ vendors = ['AhnLab','Bitdefender', 'CheckPoint', 'Cisco', 'CrowdStrike', 'Cyberr
 def getResults(v):
     print(v+suffix)
     r_file = requests.get(base_url + v + suffix)
+    # make sure a sub directory data exist before you try to persist to it
     with open('data/' + v+suffix, 'w') as f:
         f.write(r_file.text)
 
