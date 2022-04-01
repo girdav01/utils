@@ -20,6 +20,7 @@ def getResults(v):
     print(v+suffix)
     r_file = requests.get(base_url + v + suffix, verify=False)
     json_data = json.loads(r_file.text)
+    # each vendor will have a json file in the data sub folder
     with open('data/' + v+filesuffix, 'w', encoding='utf-8') as f:
         json.dump(json_data, f, ensure_ascii=False, indent=4)
 
