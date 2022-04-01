@@ -1,16 +1,20 @@
-# David Girard Sr Product Manager Trend Micro
-# Get MITRE Evaluation #4 raw json results
-# March 31st 2022
-import requests
+'''
+David Girard Sr Product Manager Trend Micro
+Get MITRE Evaluation #4 raw json results
+March 31st 2022
+tested with Python 3.9 but most 3.x should works
+'''
+import requests  # pip3 install requests
 import json
-from openpyxl import Workbook
+from openpyxl import Workbook  # pip3 install openpyxl
 from openpyxl.styles import Font, Color
 
 
 base_url = "https://attackevals.mitre-engenuity.org/api/export/?participant="
-suffix = "&adversary=wizard-spider-sandworm"
+suffix = "&adversary=wizard-spider-sandworm"  #each json file on mitre-engenuity.org got this
 filesuffix = '_wizard-spider-sandworm.json'
 
+#list of vendors in this year eval
 vendors = ['TrendMicro','Bitdefender', 'CheckPoint', 'Cisco', 'CrowdStrike', 'Cybereason', 'CyCraft', 'Cylance',
            'Cynet', 'Deepinstinct', 'Elastic','ESET', 'Fidelis', 'FireEye', 'Fortinet','f-secure', 'Malwarebytes',
            'McAfee', 'Microsoft', 'PaloAltoNetworks', 'Qualys', 'Rapid7', 'ReaQta', 'SentinelOne', 'Somma',
@@ -20,7 +24,6 @@ def getResults(v):
     print(v+suffix)
     r_file = requests.get(base_url + v + suffix, verify=False)
     json_data = json.loads(r_file.text)
-    # each vendor will have a json file in the data sub folder
     with open('data/' + v+filesuffix, 'w', encoding='utf-8') as f:
         json.dump(json_data, f, ensure_ascii=False, indent=4)
 
@@ -29,6 +32,7 @@ def downloadRawData():
         getResults(vendor)
 
 def buildSummary():
+    # build a summary in an excel shet
     wb = Workbook()
     sh = wb.active
     # set the columns names
@@ -45,11 +49,10 @@ def buildSummary():
     sh.cell(1, col_start + i + 5).value = "Visibility %"
 
     # now get the vendor summary data in the sheet
-
     row = 2
     red_text = Font(color="00FF0000")
     for vendor in vendors:
-        print(vendor)
+        print(vendor) # just to see it'S processing or crashing
 
         with open('data/' + vendor+filesuffix, encoding='utf-8') as f:
             data = json.load(f)
@@ -85,8 +88,13 @@ def buildSummary():
             f.close()
         row=row +1
 
+    # add your improvements, like creating charts
+
+    # change the name to watever you like
     wb.save('data/wizard-spider-sandworm.xlsx')
 
+# simple : download and build summary.
 downloadRawData()
 buildSummary()
+# add your steps here... pandas maybe, or upload JSON's to Elastic
 
